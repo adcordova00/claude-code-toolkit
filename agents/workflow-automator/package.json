@@ -1,0 +1,19 @@
+{
+  "name": "workflow-automator-agent",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "automate": "node automator.js"
+  },
+  "dependencies": {
+    "playwright": "^1.44.0",
+    "dotenv": "^16.4.0",
+    "zod": "^3.23.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
+    "@types/js-yaml": "^4.0.9"
+  }
+}

@@ -1,0 +1,71 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+dist/
+build/
+.npm/
+*.log
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+.playwright-mcp/
+
+# Agent outputs
+agents/*/logs/
+agents/*/reports/
+agents/*/snapshots/
+agents/*/results/
+agents/*/state/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Secrets
+*.pem
+*.key
+*.p12
+
+# Google OAuth credentials (never commit)
+.credentials/
+token.json
+
+# Personal per-machine settings: granted permissions, disabled MCP servers and skills
+# hidden from the picker. These are the preferences of whoever works here, not a contract
+# of the repo — settings.json is the one that gets versioned.
+.claude/settings.local.json
+
+# ---------------------------------------------------------------------------
+# agentic-memory/ — working notes that skills write here (architecture docs,
+# cost analyses, prototype records, prospect lists). This is where YOUR project
+# and client data lands, so the contents are never committed. Only the README
+# that documents the convention is tracked.
+# ---------------------------------------------------------------------------
+agentic-memory/*
+!agentic-memory/README.md
+
+# Scratch artifacts that pile up at the repo root during real work: screenshots
+# from Playwright sessions, exported decks, spreadsheets pulled from a client.
+# Kept out so they can never be published by accident.
+/*.png
+/*.jpg
+/*.jpeg
+/*.pdf
+/*.pptx
+/*.xlsx
+/*.docx
+/*.csv

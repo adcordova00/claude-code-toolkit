@@ -1,0 +1,17 @@
+{
+  "name": "claude-code-toolkit",
+  "version": "1.0.0",
+  "description": "Personal AI engineering toolkit — skills, MCP configs, and Playwright agents",
+  "type": "module",
+  "scripts": {
+    "new-skill": "node scripts/new-skill.js",
+    "list-skills": "node scripts/list-skills.js",
+    "validate-skills": "node scripts/validate-skills.js",
+    "setup": "bash scripts/setup.sh",
+    "add-integration": "bash scripts/add-integration.sh",
+    "docker-up": "bash scripts/docker-up.sh"
+  },
+  "devDependencies": {
+    "skills": "latest"
+  }
+}

@@ -1,0 +1,45 @@
+name: user-registration-flow
+description: Register a new user via the signup form
+baseUrl: "${APP_URL}"
+
+auth:
+  type: none  # options: none | session
+
+steps:
+  - type: navigate
+    path: /register
+
+  - type: wait-for
+    selector: "form"
+    timeout: 10000
+
+  - type: fill-form
+    fields:
+      - selector: "#email"
+        value: "${TEST_EMAIL}"
+      - selector: "#password"
+        value: "${TEST_PASSWORD}"
+      - selector: "#firstName"
+        value: "Test"
+      - selector: "#lastName"
+        value: "User"
+
+  - type: click
+    selector: "button[type='submit']"
+
+  - type: wait-for
+    selector: ".success-message"
+    timeout: 15000
+
+  - type: assert
+    selector: ".success-message"
+    contains: "Welcome"
+
+  - type: extract
+    name: userId
+    selector: "[data-user-id]"
+    attribute: data-user-id
+
+output:
+  format: json
+  path: "./results/registration-result.json"

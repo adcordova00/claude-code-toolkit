@@ -1,0 +1,23 @@
+{
+  "name": "datadog-mcp-server",
+  "version": "1.0.0",
+  "description": "Custom Datadog MCP server for Claude Code",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@datadog/datadog-api-client": "^1.28.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "site-monitor-agent",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "monitor": "node monitor.js",
+    "monitor:once": "node monitor.js --once"
+  },
+  "dependencies": {
+    "playwright": "^1.44.0",
+    "dotenv": "^16.4.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}

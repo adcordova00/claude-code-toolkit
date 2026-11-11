@@ -1,0 +1,93 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--browser", "msedge"],
+      "env": {}
+    },
+    "postgresql": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "${POSTGRES_URL}"],
+      "env": {
+        "POSTGRES_URL": "${POSTGRES_URL}"
+      }
+    },
+    "redis": {
+      "command": "npx",
+      "args": ["-y", "mcp-redis"],
+      "env": {
+        "REDIS_HOST": "${REDIS_HOST}",
+        "REDIS_PORT": "${REDIS_PORT:-6379}",
+        "REDIS_PASSWORD": "${REDIS_PASSWORD}"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+      "env": {}
+    },
+    "trello": {
+      "command": "npx",
+      "args": ["-y", "@delorenj/mcp-server-trello@1.7.1"],
+      "env": {
+        "TRELLO_API_KEY": "${TRELLO_API_KEY}",
+        "TRELLO_TOKEN": "${TRELLO_TOKEN}"
+      }
+    },
+    "drawio": {
+      "command": "npx",
+      "args": ["-y", "@drawio/mcp"],
+      "env": {}
+    },
+    "google-drive": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gdrive"],
+      "env": {
+        "GDRIVE_CREDENTIALS_PATH": "${GOOGLE_CREDENTIALS_PATH}"
+      }
+    },
+    "google-slides": {
+      "command": "npx",
+      "args": ["-y", "google-slides-mcp"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
+        "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}"
+      }
+    },
+    "datadog": {
+      "command": "node",
+      "args": ["${CLAUDE_PROJECT_DIR:-.}/mcp/datadog/dist/index.js"],
+      "env": {
+        "DD_API_KEY": "${DD_API_KEY}",
+        "DD_APP_KEY": "${DD_APP_KEY}",
+        "DD_SITE": "${DD_SITE:-datadoghq.com}"
+      }
+    },
+    "google-maps": {
+      "command": "npx",
+      "args": ["-y", "@cablate/mcp-google-map", "--stdio"],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "${GOOGLE_MAPS_API_KEY}"
+      }
+    },
+    "canva": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote@latest", "https://mcp.canva.com/mcp"]
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "env": {}
+    },
+    "postgresql": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "${POSTGRES_URL}"],
+      "env": {
+        "POSTGRES_URL": "${POSTGRES_URL}"
+      }
+    },
+    "redis": {
+      "command": "npx",
+      "args": ["-y", "mcp-redis"],
+      "env": {
+        "REDIS_HOST": "${REDIS_HOST}",
+        "REDIS_PORT": "${REDIS_PORT:-6379}",
+        "REDIS_PASSWORD": "${REDIS_PASSWORD}"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+      "env": {}
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"],
+      "env": {}
+    },
+    "drawio": {
+      "command": "npx",
+      "args": ["-y", "@drawio/mcp"],
+      "env": {}
+    },
+    "google-drive": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gdrive"],
+      "env": {
+        "GDRIVE_CREDENTIALS_PATH": "${GOOGLE_CREDENTIALS_PATH}"
+      }
+    },
+    "google-slides": {
+      "command": "npx",
+      "args": ["-y", "google-slides-mcp"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
+        "GOOGLE_REFRESH_TOKEN": "${GOOGLE_REFRESH_TOKEN}"
+      }
+    },
+    "datadog": {
+      "command": "node",
+      "args": ["${__dirname}/mcp/datadog/dist/index.js"],
+      "env": {
+        "DD_API_KEY": "${DD_API_KEY}",
+        "DD_APP_KEY": "${DD_APP_KEY}",
+        "DD_SITE": "${DD_SITE:-datadoghq.com}"
+      }
+    },
+    "google-maps": {
+      "command": "npx",
+      "args": ["-y", "@cablate/mcp-google-map", "--stdio"],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "${GOOGLE_MAPS_API_KEY}"
+      }
+    }
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "agent",
+            "if": "Write(agentic-memory/*)",
+            "timeout": 90,
+            "statusMessage": "Sincronizando agentic-memory/ con auto-memoria...",
+            "prompt": "A file was just written under agentic-memory/ at the workspace root. The exact path is in $ARGUMENTS as tool_input.file_path. This folder holds full human-readable project docs (architecture, cost analysis, scripts, etc.) that the user reads directly and that are versioned in git.\n\nThere is a separate auto-memory system at '<YOUR_HOME>\\.claude\\projects\\<workspace-slug>\\memory\\' with an index file MEMORY.md (one line per memory: '- [Title](file.md) — one-line hook') and individual memory .md files with YAML frontmatter (name, description, metadata.type: user|feedback|project|reference).\n\nYour job: make sure every doc written to agentic-memory/ has a short pointer entry in that auto-memory system, so a future Claude Code session knows the doc exists without re-reading the whole repo. You only have Read/Write access — do not use Bash or Glob to list directories, derive everything from the filename itself.\n\nSteps:\n1. Read the file that was just written.\n2. Read MEMORY.md in the auto-memory directory above. If any existing entry already links to or mentions this exact agentic-memory file path or filename, stop — already synced, do nothing else.\n3. Otherwise, derive the slug deterministically from the source filename — strip the '.md' extension and any 'prototype-' or 'spike-' prefix, replace dashes with underscores, and prefix with 'project_' (e.g. agentic-memory/prototype-acmeshop-catalogo.md -> project_acmeshop_catalogo.md). This is collision-free by construction since it is 1:1 derived from the unique source filename — do not enumerate the directory to check. Write a new file at that path with exactly this structure:\n\n---\nname: <slug>\ndescription: <one specific line — what the doc covers and when it is relevant>\nmetadata:\n  type: project\n---\n\n<2-4 sentences summarizing what the doc contains and its key facts>\n\nDoc completo en agentic-memory/<filename>.\n\n4. Append exactly one new line to MEMORY.md (never touch existing lines), following the existing format: '- [Short Title](<slug>.md) — one-line hook, under ~150 chars'.\n\nWrite the description, summary and MEMORY.md line in Spanish (español), matching the language of the existing memory entries in that directory.\n\nDo not modify or delete anything outside the auto-memory directory. Do not create a duplicate entry if one already exists. If the written file is trivial, empty, or clearly a throwaway test artifact, use your judgment and skip it entirely."
+          },
+          {
+            "type": "agent",
+            "if": "Edit(agentic-memory/*)",
+            "timeout": 90,
+            "statusMessage": "Sincronizando agentic-memory/ con auto-memoria...",
+            "prompt": "A file under agentic-memory/ at the workspace root was just edited. The exact path is in $ARGUMENTS as tool_input.file_path. This folder holds full human-readable project docs (architecture, cost analysis, scripts, etc.) that the user reads directly and that are versioned in git.\n\nThere is a separate auto-memory system at '<YOUR_HOME>\\.claude\\projects\\<workspace-slug>\\memory\\' with an index file MEMORY.md (one line per memory: '- [Title](file.md) — one-line hook') and individual memory .md files with YAML frontmatter (name, description, metadata.type: user|feedback|project|reference).\n\nYour job: make sure this doc has a short pointer entry in that auto-memory system, and that the entry still reflects the doc's current content after this edit.\n\nSteps:\n1. Read the edited file.\n2. Read MEMORY.md in the auto-memory directory above.\n3. If no entry links to this file yet, create one. Derive the slug deterministically from the source filename — strip '.md' and any 'prototype-'/'spike-' prefix, replace dashes with underscores, prefix with 'project_' (no need to enumerate the directory, this is collision-free by construction). Write a new memory file there (frontmatter name/description/metadata.type: project, body summarizing the doc plus 'Doc completo en agentic-memory/<filename>.'), and append one line to MEMORY.md following the existing format. You only have Read/Write access — do not use Bash or Glob.\n4. If an entry already exists and the edit changed something material (not a typo fix), update that memory file's body and description to match the doc's current state — but do not rewrite the whole file gratuitously, only the parts that are now stale.\n5. If the entry already exists and is still accurate, do nothing.\n\nWrite the description, summary and MEMORY.md line in Spanish (español), matching the language of the existing memory entries in that directory.\n\nDo not modify or delete anything outside the auto-memory directory. If the edit is trivial (whitespace, typo), skip entirely."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$j = [Console]::In.ReadToEnd() | ConvertFrom-Json; $cmd = $j.tool_input.command; if ($cmd -match '(^|[;&|]|\\s)git\\s+(commit|push)(\\s|$)') { $b = (git rev-parse --abbrev-ref HEAD 2>$null); if ($b) { $d = (git symbolic-ref refs/remotes/origin/HEAD 2>$null) -replace '^refs/remotes/origin/', ''; if (-not $d -and ($b -eq 'main' -or $b -eq 'master')) { $d = $b }; if ($d -and $b -eq $d) { $r = 'Estas en la rama por defecto (' + $b + '). Confirma explicitamente antes de commitear/pushear directo - si no, crea primero una rama feature.'; $out = @{ hookSpecificOutput = @{ hookEventName = 'PreToolUse'; permissionDecision = 'ask'; permissionDecisionReason = $r } } | ConvertTo-Json -Compress -Depth 5; Write-Output $out } } }",
+            "timeout": 15,
+            "statusMessage": "Verificando que no sea commit/push directo a main..."
+          }
+        ]
+      }
+    ]
+  }
+}
